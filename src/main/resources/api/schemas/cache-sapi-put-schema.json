@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://specter.com/apigee-request-schema.json",
+    "type": "object",
+    "title": "The cache sapi Request Payload",
+    "examples": [
+        {
+            "prefix": "provision-history",
+            "value": "1",
+            "expiration": 1607731200
+        }
+    ],
+    "required": [
+        "prefix",
+        "value",
+        "expiration"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "prefix": {
+            "type": "string",
+            "examples": [
+                "provision-history"
+            ],
+            "minLength": 1
+        },
+        "value": {
+            "type": "string",
+            "examples": [
+                "1"
+            ],
+            "minLength": 1
+        },
+        "expiration": {
+            "type": "number",
+            "examples": [
+                "1607731200"
+            ],
+            "minLength": 1,
+            "maxLength": 10
+        }
+    }
+}

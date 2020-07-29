@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:redis="http://www.mulesoft.org/schema/mule/redis"
+	xmlns:dynamodb="http://www.mulesoft.org/schema/mule/dynamodb"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/dynamodb http://www.mulesoft.org/schema/mule/dynamodb/current/mule-dynamodb.xsd
+http://www.mulesoft.org/schema/mule/redis http://www.mulesoft.org/schema/mule/redis/current/mule-redis.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <configuration-properties doc:name="Configuration properties" doc:id="4c7d76e6-d10d-4d93-aef0-2033d2e03691" file="config/cache-sapi-${env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="bf77b723-1bc4-4232-b126-d4f562c484b8" name="env" value="dev" />
+    
+    <http:listener-config name="cache-sapi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${https.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:trust-store insecure="true" />
+				<tls:key-store type="${secure::tls.type}" path="${secure::tls.path}" alias="${secure::tls.alias}" password="${secure::tls.password}" keyPassword="${secure::tls.keypass}"/>
+			</tls:context>
+		</http:listener-connection>
+    </http:listener-config>
+    <apikit:config name="cache-sapi-config" api="cache-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    
+    <redis:redis-config name="Provisioning-Cache-Redis" doc:name="Redis Redis" doc:id="7cd2d7e6-029b-42eb-9bcb-cf4eec1738e6" >
+		<redis:nonclustered-connection host="${secure::cache.redis.host}" port="${secure::cache.redis.port}" password="${secure::cache.redis.password}" />
+	</redis:redis-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="29013ff5-f671-4b8a-9571-dc708f02da3f" file="config/cache-sapi-dev.yaml" key="${secure_key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<global-property doc:name="Global Property" doc:id="8ab41468-96e3-4879-acba-94162da194ca" name="secure_key" value="mulesoft" />
+	<api-gateway:autodiscovery apiId="${app_id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="b8a8bd56-380e-462f-833f-2c15507d9414" flowRef="cache-sapi-main" />
+	<global-property doc:name="Global Property" doc:id="c53e167d-c497-4469-bce0-aee8a441c258" name="app_id" value="16278828" />
+    
+</mule>

@@ -1,0 +1,16 @@
+cache:
+    redis:
+        host: "![wok6d4vOpWBZsfnBADBoSCyUxiSl0I3uYh1A6av8OW5HJHLklIgpP3lKVvX6uDQWtbx5mWsJ09g=]"
+        port: "![sFduj3nJg+o=]"
+        password: "![vIrz+1NcsqZ3Fd3ipjcanNIDbp5cL7zpKvuK8J+8bT/s0dMvx1O9GQ==]"
+
+tls:
+  type: "![G5Bz6HwOjrE=]"
+  path: "![AFoHe6lo/zYupvkuJ+gl/A==]"
+  alias: "![getbAvhRhQU=]"
+  keypass: "![Qvg+/L86Aw7HxUc+4uszNw==]"
+  password: "![Qvg+/L86Aw7HxUc+4uszNw==]"
+  
+https:
+  port: "8082"
+

@@ -1,0 +1,4 @@
+{
+  "minMuleVersion": "4.3.0",
+  "secureProperties": ["secure_key", "cache.redis.password", "tls.keypass", "tls.password", "anypoint.platform.client_id", "anypoint.platform.client_secret"]
+}

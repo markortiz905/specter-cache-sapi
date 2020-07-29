@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>MuleRepository</id>
+      <username>ortizmarkgaming1</username>
+      <password>ortizMark905</password>
+    </server>
+  </servers>
+  
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties> <!-- Optional URL to server. Default value is http://localhost:9000 -->
+                <sonar.projectVersion>1.0</sonar.projectVersion>
+                <sonar.host.url> http://localhost:9000 </sonar.host.url>
+                <sonar.sources>.</sonar.sources>
+                <sonar.profile>WSL-Standards</sonar.profile>
+                <sonar.showProfiling>true</sonar.showProfiling>
+                <sonar.verbose>false</sonar.verbose>
+                <sonar.exclusions>target/**,.gitignore</sonar.exclusions>
+                <sonar.coverage.mulesoft.jsonReportPaths>./target/site/munit/coverage/munit-coverage.json</sonar.coverage.mulesoft.jsonReportPaths>
+            </properties>
+        </profile>
+    </profiles>
+
+</settings>

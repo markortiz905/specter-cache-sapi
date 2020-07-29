@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:redis="http://www.mulesoft.org/schema/mule/redis"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/redis http://www.mulesoft.org/schema/mule/redis/current/mule-redis.xsd">
+	<flow name="sys-impl-cache:key-value:flow" doc:id="152d6b40-6bc3-4825-8010-59dfed186b06" >
+		<logger level="INFO" doc:name="Log Start Get Key Value" doc:id="9ac8b081-1f11-4f7f-ad73-308d3e45806a" message='#["transactionId: " ++ correlationId  ++ " Process Cache Started"]' />
+		<choice doc:name="Choice" doc:id="e7d0e9e3-f8aa-428c-8e7b-ad92de784e72" >
+			<when expression='#[attributes.method == "GET"]' >
+				<redis:get doc:name="Get key value" doc:id="26252af2-f0b7-4f98-9228-4df7c27fecac" config-ref="Provisioning-Cache-Redis" key="#[vars.cacheKey]" />
+				<ee:transform doc:name="Transform to Response Payload" doc:id="e612557f-5750-490f-bad3-9846a5d737c7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	value: payload
+}]]></ee:set-payload>
+			</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+---
+if(payload == null)
+(404)
+else
+(200)]]></ee:set-variable>
+					</ee:variables>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<choice doc:name="Check if value is nul, othewise dont put any" doc:id="a4951755-0140-40c0-9d2b-ee2b4af053a4">
+					<when expression="#[not (vars.cacheValue == null)]">
+						<redis:set doc:name="Set value to key" doc:id="b5dbfd71-6d86-450c-8bce-c0ca2d203102" config-ref="Provisioning-Cache-Redis" key="#[vars.cacheKey]">
+					<redis:value><![CDATA[#[vars.cacheValue]]]></redis:value>
+				</redis:set>
+					</when>
+				</choice>
+				<choice doc:name="Check if expiration is not null then expire key" doc:id="c13a05c7-ac1d-4431-93a3-157a2aba79c8" >
+					<when expression="#[not (vars.expiration == null)]">
+						<redis:expire-at unixTime="#[vars.expiration]" doc:name="Expire at given timestamp" doc:id="0ea23098-0c80-486c-995c-1dcf5aca7511" config-ref="Provisioning-Cache-Redis" key="#[vars.cacheKey]" />
+					</when>
+				</choice>
+				<ee:transform doc:name="Transform to Response payload" doc:id="cea4dd70-3fca-4f53-b952-2f7c705704fd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+if (payload as Boolean)
+({
+	status: 0,
+	message: "success",
+	cacheKey: vars.cacheKey
+})
+else 
+({
+	status: 1,
+	message: "failed",
+	cacheKey: vars.cacheKey
+})
+	
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+---
+if (payload as Boolean)
+(200)
+else 
+(500)
+	
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Log End Get Key Value" doc:id="d04f140d-9e63-46f9-a4a6-e0c69e74eea2" message='#["transactionId: " ++ correlationId  ++ " Process Cache Ended"]' />
+		<error-handler ref="APP-ERROR-HANDLER" />
+	</flow>
+	
+	</mule>

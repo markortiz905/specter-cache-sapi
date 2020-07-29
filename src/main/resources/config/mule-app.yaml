@@ -1,0 +1,8 @@
+http:
+    private:
+        hostname: localhost
+        port: "8082"
+app:
+    name: "prepaid-sapi"
+https:
+  port: "8082"

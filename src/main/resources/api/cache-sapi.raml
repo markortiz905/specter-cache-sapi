@@ -1,0 +1,53 @@
+#%RAML 1.0
+title: cache-sapi
+
+mediaType: application/json
+
+types:
+  put-request-schema: !include schemas/cache-sapi-put-schema.json
+
+/entry/{key}:
+  put:
+    headers:
+      X-Correlation-Id:
+        required: true
+    body:
+      type: put-request-schema
+      example:
+        !include schemas/sample-request.json
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              [{
+                "status": 0,
+                "message": "success",
+                "key": "provision-history9364000094"
+              }]
+      500:
+        body:
+          application/json:
+            example:
+              [{
+                "message": "cache is down"
+              }]
+  get:
+    headers:
+      X-Correlation-Id:
+        required: true
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              [{
+                "value": "1"
+              }]
+      500:
+        body:
+          application/json:
+            example:
+              [{
+                "message": "cache is down"
+              }]
